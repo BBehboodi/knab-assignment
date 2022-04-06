@@ -25,10 +25,9 @@ namespace Knab.Assignment.API.Models.Proxy
             if (CryptocurrenciesQuotes is null)
                 throw new InvalidOperationException($"{nameof(CryptocurrenciesQuotes)} could not be null");
 
-            return CryptocurrenciesQuotes.Single()
-                .Value.Single()
-                .Quotes
-                .Select(x => new QuoteResponse(x.Key, x.Value.Price))
+            return CryptocurrenciesQuotes.First()
+                .Value.First()
+                .Quotes.Select(x => new QuoteResponse(x.Key, x.Value.Price))
                 .ToList();
         }
     }
