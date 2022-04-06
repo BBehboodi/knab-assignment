@@ -1,6 +1,6 @@
 ﻿namespace Knab.Assignment.API.Models.Dto
 {
-    public class QuoteDto
+    public record class QuoteDto
     {
         public QuoteDto(string currency, decimal price)
         {

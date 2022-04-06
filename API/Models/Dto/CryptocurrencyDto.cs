@@ -1,6 +1,6 @@
 ﻿namespace Knab.Assignment.API.Models.Dto
 {
-    public class CryptocurrencyDto
+    public record class CryptocurrencyDto
     {
         public CryptocurrencyDto(int id, string name, string symbol)
         {
