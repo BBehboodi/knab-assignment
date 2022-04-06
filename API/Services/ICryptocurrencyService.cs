@@ -6,6 +6,6 @@ namespace Knab.Assignment.API.Services
     {
         Task<List<CryptocurrencyDto>> GetCryptocurrenciesAsync(int start, int limit, string sort, string sortDir);
 
-        Task<List<QuoteDto>> GetQuotesAsync(string symbol);
+        Task<List<CryptocurrencyQuoteDto>> GetQuotesAsync(string symbol);
     }
 }

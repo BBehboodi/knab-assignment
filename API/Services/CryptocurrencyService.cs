@@ -52,7 +52,7 @@ namespace Knab.Assignment.API.Services
                 .ToList();
         }
 
-        public async Task<List<QuoteDto>> GetQuotesAsync(string symbol)
+        public async Task<List<CryptocurrencyQuoteDto>> GetQuotesAsync(string symbol)
         {
             _logger.LogTrace($"{nameof(GetQuotesAsync)} service called. args: {nameof(symbol)}: {symbol}");
 

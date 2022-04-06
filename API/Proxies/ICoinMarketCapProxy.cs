@@ -6,6 +6,6 @@ namespace Knab.Assignment.API.Proxies
     {
         Task<List<CryptocurrencyResponse>> GetCryptocurrenciesAsync(int start, int limit, string sort, string sortDir);
 
-        Task<List<QuoteResponse>> GetQuotesAsync(string symbol, string[] currencies);
+        Task<List<CryptocurrencyQuoteResponse>> GetQuotesAsync(string symbol, string[] currencies);
     }
 }

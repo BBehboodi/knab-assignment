@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Knab.Assignment.API.Models.Dto;
+using System.Text.Json.Serialization;
 
 namespace Knab.Assignment.API.Models.Proxy
 {
@@ -19,16 +20,5 @@ namespace Knab.Assignment.API.Models.Proxy
         public Dictionary<string, List<CryptocurrencyQuoteResponse>>? CryptocurrenciesQuotes { get; }
 
         public bool Succeed { get; }
-
-        public List<QuoteResponse> ToQuoteResponse()
-        {
-            if (CryptocurrenciesQuotes is null)
-                throw new InvalidOperationException($"{nameof(CryptocurrenciesQuotes)} could not be null");
-
-            return CryptocurrenciesQuotes.First()
-                .Value.First()
-                .Quotes.Select(x => new QuoteResponse(x.Key, x.Value.Price))
-                .ToList();
-        }
     }
 }

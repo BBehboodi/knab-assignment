@@ -105,12 +105,13 @@ namespace Knab.Assignment.API.UnitTests.Proxies
         {
             // Arrange
             string symbol = "BTC";
+            string cryptoName = "Bitcoin";
             var currencies = new string[] { "USD", "AUD" };
             var appConfig = new AppConfig { CoinMarketCap = new CoinMarketCapConfig { ApiKey = "Key", ApiUrl = "http://www.test.com" } };
             _mockedAppConfig.Setup(x => x.Value).Returns(appConfig);
             var quotes = currencies.ToDictionary(k => k, v => new QuoteInfoResponse(100));
             var cryptocurrenciesQuotes = new Dictionary<string, List<CryptocurrencyQuoteResponse>>
-            { { symbol, new List<CryptocurrencyQuoteResponse> { new CryptocurrencyQuoteResponse(1, "Bitcoin", symbol, quotes) } } };
+            { { symbol, new List<CryptocurrencyQuoteResponse> { new CryptocurrencyQuoteResponse(1, cryptoName, symbol, quotes) } } };
             var status = new StatusResponse(0, errorMessage: null);
             var response = new CryptocurrenciesQuoteResponse(status, cryptocurrenciesQuotes);
             string responseJson = JsonSerializer.Serialize(response);
@@ -124,8 +125,8 @@ namespace Knab.Assignment.API.UnitTests.Proxies
 
             // Assert
             Assert.NotNull(proxyResult);
-            Assert.Equal(quotes.Count, proxyResult.Count);
-            Assert.All(currencies, currency => proxyResult.Any(x => x.Currency == currency));
+            Assert.Single(proxyResult);
+            Assert.Equal(cryptoName, proxyResult.Single().Name);
         }
 
         [Fact]

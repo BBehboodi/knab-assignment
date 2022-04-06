@@ -145,10 +145,12 @@ namespace Knab.Assignment.API.UnitTests.Services
         {
             // Arrange
             string symbol = "BTC";
-            var appConfig = new AppConfig { Currencies = new string[] { "AUR", "USD" } };
-            var quotes = appConfig.Currencies.Select(x => new QuoteResponse(x, 100)).ToList();
+            var currencies = new string[] { "AUR", "USD" };
+            var appConfig = new AppConfig { Currencies = currencies };
+            var quotes = currencies.ToDictionary(k => k, v => new QuoteInfoResponse(100));
+            var cryptoQuotes = appConfig.Currencies.Select(x => new CryptocurrencyQuoteResponse(1, "Bitcoin", "BTC", quotes)).ToList();
             _mockedAppConfig.Setup(x => x.Value).Returns(appConfig);
-            _mockedCoinMarketCapProxy.Setup(x => x.GetQuotesAsync(symbol, appConfig.Currencies)).ReturnsAsync(quotes);
+            _mockedCoinMarketCapProxy.Setup(x => x.GetQuotesAsync(symbol, currencies)).ReturnsAsync(cryptoQuotes);
 
             // Act
             var serviceResult = await cryptocurrencyService.GetQuotesAsync(symbol);
@@ -178,8 +180,10 @@ namespace Knab.Assignment.API.UnitTests.Services
         {
             // Arrange
             string symbol = null!;
-            var appConfig = new AppConfig { Currencies = new string[] { "AUR", "USD" } };
-            var quotes = appConfig.Currencies.Select(x => new QuoteResponse(x, 100)).ToList();
+            var currencies = new string[] { "AUR", "USD" };
+            var appConfig = new AppConfig { Currencies = currencies };
+            var quotes = currencies.ToDictionary(k => k, v => new QuoteInfoResponse(100));
+            var cryptoQuotes = appConfig.Currencies.Select(x => new CryptocurrencyQuoteResponse(1, "Bitcoin", "BTC", quotes)).ToList();
 
             // Assert
             await Assert.ThrowsAsync<ArgumentNullException>(() => cryptocurrencyService.GetQuotesAsync(symbol));
@@ -191,8 +195,10 @@ namespace Knab.Assignment.API.UnitTests.Services
         {
             // Arrange
             string symbol = "";
-            var appConfig = new AppConfig { Currencies = new string[] { "AUR", "USD" } };
-            var quotes = appConfig.Currencies.Select(x => new QuoteResponse(x, 100)).ToList();
+            var currencies = new string[] { "AUR", "USD" };
+            var appConfig = new AppConfig { Currencies = currencies };
+            var quotes = currencies.ToDictionary(k => k, v => new QuoteInfoResponse(100));
+            var cryptoQuotes = appConfig.Currencies.Select(x => new CryptocurrencyQuoteResponse(1, "Bitcoin", "BTC", quotes)).ToList();
 
             // Assert
             await Assert.ThrowsAsync<ArgumentException>(() => cryptocurrencyService.GetQuotesAsync(symbol));

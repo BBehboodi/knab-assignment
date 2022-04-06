@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Knab.Assignment.API.Models.Dto;
+using System.Text.Json.Serialization;
 
 namespace Knab.Assignment.API.Models.Proxy
 {
@@ -13,5 +14,11 @@ namespace Knab.Assignment.API.Models.Proxy
 
         [JsonPropertyName("quote")]
         public Dictionary<string, QuoteInfoResponse> Quotes { get; }
+
+        public new CryptocurrencyQuoteDto ToDto()
+        {
+            var quotes = Quotes.ToDictionary(k => k.Key, v => v.Value.Price);
+            return new CryptocurrencyQuoteDto(Name, quotes);
+        }
     }
 }

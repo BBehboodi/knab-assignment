@@ -39,18 +39,39 @@ namespace Knab.Assignment.API.Proxies
             return response.Cryptocurrencies;
         }
 
-        public async Task<List<QuoteResponse>> GetQuotesAsync(string symbol, string[] currencies)
+        public async Task<List<CryptocurrencyQuoteResponse>> GetQuotesAsync(string symbol, string[] currencies)
         {
             _logger.LogTrace($"{nameof(GetQuotesAsync)} proxy called. " +
                 $"args: {nameof(symbol)}: {symbol}, {nameof(currencies)}: {string.Join(',', currencies)}");
 
+            List<CryptocurrencyQuoteResponse> response;
             if (_options.Value.CoinMarketCap.IsBasicPlan)
-                return await GetQuotesBasicPlan(symbol, currencies);
+                response = await GetQuotesBasicPlan(symbol, currencies);
+            else
+                response = await GetLatestQuotesAsync(symbol, currencies);
 
-            return await GetLatestQuotesAsync(symbol, currencies);
+            return response
+                .GroupBy(x => new { x.Name, x.Id, x.Symbol })
+                .Select(grpCryptoQuote =>
+                {
+                    var quotes = new Dictionary<string, QuoteInfoResponse>();
+                    foreach (var cryptoQuote in grpCryptoQuote)
+                    {
+                        foreach (var quote in cryptoQuote.Quotes)
+                        {
+                            quotes.Add(quote.Key, quote.Value);
+                        }
+                    }
+                    return new CryptocurrencyQuoteResponse(
+                        grpCryptoQuote.Key.Id, 
+                        grpCryptoQuote.Key.Name,
+                        grpCryptoQuote.Key.Symbol,
+                        quotes);
+                }).ToList();
+
         }
 
-        private async Task<List<QuoteResponse>> GetQuotesBasicPlan(string symbol, string[] currencies)
+        private async Task<List<CryptocurrencyQuoteResponse>> GetQuotesBasicPlan(string symbol, string[] currencies)
         {
             var responsesTasks = currencies
                 .Select(currency => GetLatestQuotesAsync(symbol, new string[] { currency }))
@@ -59,7 +80,7 @@ namespace Knab.Assignment.API.Proxies
             return responses.SelectMany(x => x).ToList();
         }
 
-        public async Task<List<QuoteResponse>> GetLatestQuotesAsync(string symbol, string[] currencies)
+        public async Task<List<CryptocurrencyQuoteResponse>> GetLatestQuotesAsync(string symbol, string[] currencies)
         {
             var requestUrl = $"v2/cryptocurrency/quotes/latest?symbol={symbol}&convert={string.Join(',', currencies)}";
             var httpMessage = await _httpClient.GetAsync(requestUrl);
@@ -71,7 +92,10 @@ namespace Knab.Assignment.API.Proxies
             if (!response.Succeed)
                 throw new HttpResponseException(response.Status.ErrorCode, response.Status.ErrorMessage!);
 
-            return response.ToQuoteResponse();
+            if (response.CryptocurrenciesQuotes is null)
+                throw new InvalidOperationException($"{nameof(response.CryptocurrenciesQuotes)} could not be null");
+
+            return response.CryptocurrenciesQuotes.SelectMany(x => x.Value).ToList();
         }
     }
 }

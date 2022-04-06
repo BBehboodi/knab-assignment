@@ -53,8 +53,8 @@ namespace Knab.Assignment.API.Controllers
         /// <param name="symbol">The ticker symbol for this cryptocurrency.</param>
         /// <returns>Returns the latest market quote for 1 cryptocurrency.</returns>
         [HttpGet("{symbol}/quotes")]
-        [ProducesResponseType(typeof(Quote[]), StatusCodes.Status200OK)]
-        public async Task<List<Quote>> GetQuotesAsync([DefaultValue("BTC")] string symbol)
+        [ProducesResponseType(typeof(CryptocurrencyQuote[]), StatusCodes.Status200OK)]
+        public async Task<List<CryptocurrencyQuote>> GetQuotesAsync([DefaultValue("BTC")] string symbol)
         {
             _logger.LogTrace($"{nameof(GetQuotesAsync)} api called. args: {nameof(symbol)}: {symbol}");
 
